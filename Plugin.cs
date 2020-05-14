@@ -9,7 +9,7 @@ namespace CTDDeath
         public override int Version => 1;
 
         public override string Author => "erri120";
-        public override string Website => "https://github.com/erri120";
+        public override string Website => "https://github.com/erri120/ctd-on-death";
 
         public override int RequiredFrameworkVersion => 9;
         public override int RequiredLibraryVersion => 13;
