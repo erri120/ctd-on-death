@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30104.148
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CTD on Death", "CTD on Death.csproj", "{0833A9A3-52CA-4B02-A8D2-50537999893F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0833A9A3-52CA-4B02-A8D2-50537999893F}.Debug|x64.ActiveCfg = Debug|x64
+		{0833A9A3-52CA-4B02-A8D2-50537999893F}.Debug|x64.Build.0 = Debug|x64
+		{0833A9A3-52CA-4B02-A8D2-50537999893F}.Release|x64.ActiveCfg = Release|x64
+		{0833A9A3-52CA-4B02-A8D2-50537999893F}.Release|x64.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {1739A851-1878-405C-AD20-5444D94CED72}
+	EndGlobalSection
+EndGlobal
