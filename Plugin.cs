@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -69,6 +70,9 @@ namespace CTDDeath
 
                     if(_settings.DeleteSaves || _settings.DeleteQuickSaves || _settings.DeleteAutoSaves)
                         DeleteSaves();
+
+                    if(_settings.UninstallSkyrim)
+                        Process.Start("explorer.exe", "steam://uninstall/489830");
 
                     Main.Instance.QuitGame = true;
                 }
