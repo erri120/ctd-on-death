@@ -68,8 +68,8 @@ namespace CTDDeath
                         return;
                     }
 
-                    if(_settings.DeleteSaves || _settings.DeleteQuickSaves || _settings.DeleteAutoSaves)
-                        DeleteSaves();
+                    if(_settings.DeleteSaves || _settings.DeleteQuickSaves || _settings.DeleteAutoSaves || _settings.DeleteNamedSaves)
+                        DeleteSaves(player);
 
                     if(_settings.UninstallSkyrim)
                         Process.Start("explorer.exe", "steam://uninstall/489830");
@@ -81,10 +81,11 @@ namespace CTDDeath
             return true;
         }
 
-        public void DeleteSaves()
+        public void DeleteSaves(PlayerCharacter player)
         {
             List<string> files = Directory.EnumerateFiles(SavesFolder)
                 .Where(File.Exists)
+                .Where(x => x.EndsWith(".ess") || x.EndsWith(".skse"))
                 .OrderByDescending(File.GetLastWriteTime)
                 .Select(x => x.Replace(SavesFolder, ""))
                 .Select(x =>
@@ -121,6 +122,49 @@ namespace CTDDeath
                 filesToDelete.AddRange(files
                     .Where(x => regularSavesRegex.Match(x).Success)
                     .Select(x => Path.Combine(SavesFolder, x)));
+            }
+
+            if (_settings.DeleteNamedSaves)
+            {
+                var currentPlayerName = string.IsNullOrWhiteSpace(player.Name) ? player.BaseActor.Name : player.Name;
+                var namedSaves = files
+                    .Where(x => !x.StartsWith("Save") && !x.StartsWith("Autosave") && !x.StartsWith("Quicksave"))
+                    .Where(x => x.EndsWith(".ess"))
+                    .Select(x => Path.Combine(SavesFolder, x))
+                    .ToList();
+
+                namedSaves.Do(x =>
+                {
+                    if (!File.Exists(x))
+                        return;
+
+                    try
+                    {
+                        using (var stream = File.OpenRead(x))
+                        using (var br = new BinaryReader(stream))
+                        {
+                            char[] magic = br.ReadChars(13);
+                            var magicString = new string(magic);
+                            if (magicString != "TESV_SAVEGAME")
+                                return;
+
+                            br.ReadUInt32(); //header size
+                            br.ReadUInt32(); //version
+                            br.ReadUInt32(); //save number
+                            var playerName = br.ReadWString();
+                            if (playerName != currentPlayerName)
+                                return;
+
+                            Utils.Log(
+                                $"Player name in save {x} is \"{playerName}\" and matches current name \"{currentPlayerName}\"");
+                            filesToDelete.Add(x);
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        Utils.Log($"Unable to open, read or parse save file {x}: {e}");
+                    }
+                });
             }
 
             if (_settings.DeleteAutoSaves)

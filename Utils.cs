@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using NetScriptFramework.Tools;
 
 namespace CTDDeath
@@ -11,6 +12,13 @@ namespace CTDDeath
         static Utils()
         {
             LogFile = new LogFile("CTD on Death", LogFileFlags.AppendFile | LogFileFlags.AutoFlush);
+        }
+
+        public static string ReadWString(this BinaryReader br)
+        {
+            var prefix = br.ReadUInt16();
+            var result = new string(br.ReadChars(prefix));
+            return result;
         }
 
         public static void Log(string s)
