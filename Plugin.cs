@@ -5,6 +5,8 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using NetScriptFramework.SkyrimSE;
+using NetScriptFramework.Tools;
+
 // ReSharper disable InconsistentlySynchronizedField
 
 namespace CTDDeath
@@ -24,6 +26,7 @@ namespace CTDDeath
         private bool _inMainMenu;
         private Settings _settings;
         private readonly object _lockObject = new object();
+        private Timer _timer;
 
         private static string DocumentsFolder => Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
         private static string SavesFolder => Path.Combine(DocumentsFolder, "My Games", "Skyrim Special Edition", "Saves");
@@ -33,6 +36,7 @@ namespace CTDDeath
         {
             _settings = new Settings();
             _settings.Load();
+            _timer = new Timer();
 
             Events.OnMainMenu.Register(e =>
             {
@@ -56,6 +60,7 @@ namespace CTDDeath
 
                 lock (_lockObject)
                 {
+                    _timer.Start();
                     var killer = player.KilledBy;
 
                     Utils.Log(killer == null
@@ -74,6 +79,9 @@ namespace CTDDeath
                     if(_settings.UninstallSkyrim)
                         Process.Start("explorer.exe", "steam://uninstall/489830");
 
+                    var now = _timer.Time;
+                    _timer.Stop();
+                    Utils.Log($"Execution time: {now}ms");
                     Main.Instance.QuitGame = true;
                 }
             });
@@ -127,7 +135,7 @@ namespace CTDDeath
             if (_settings.DeleteNamedSaves)
             {
                 var currentPlayerName = string.IsNullOrWhiteSpace(player.Name) ? player.BaseActor.Name : player.Name;
-                var namedSaves = files
+                List<string> namedSaves = files
                     .Where(x => !x.StartsWith("Save") && !x.StartsWith("Autosave") && !x.StartsWith("Quicksave"))
                     .Where(x => x.EndsWith(".ess"))
                     .Select(x => Path.Combine(SavesFolder, x))
